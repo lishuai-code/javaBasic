@@ -1,19 +1,45 @@
 package LeetCode;
 
 import entity.ListNode;
-
-import java.lang.reflect.Member;
-import java.util.Arrays;
+import java.util.*;
 
 public class Solution2 {
     public static void main(String[] args) {
-        ListNode listNode = new Solution2().removeNthFromEnd(new ListNode(1,new ListNode(2)), 2);
+
+        boolean listNode = new Solution2().isValid("([}}])");
         System.out.println(listNode);
     }
 
     public boolean isValid(String s) {
+        //1.如果括号数为奇数，当然就无法成对闭合：不满足条件一
+        if (s.length() % 2 == 1) return false;
 
-        return true;
+        //2.如果没有左括号，或者没有右括号，当然就无法成对闭合：不满足条件一
+        if (!s.contains("(") && !s.contains("[") && !s.contains("}")) return false;
+        if (!s.contains(")") && !s.contains("]") && !s.contains("}")) return false;
+
+        LinkedList<Character> queue = new LinkedList<>();
+        for (int i = 0; i < s.length(); i++){
+
+            //3.将左括号全部添加到链表中，这里用栈的特性(后进先出)方法:
+            if (s.charAt(i) == '(' || s.charAt(i) == '[' || s.charAt(i) == '{'){
+                queue.push(s.charAt(i));
+            }
+
+            //4.如果字符为右括号，则判断链表中第一个是否是对应的左括号，由于queue.peek() == '(';右边是单引号基本数据类型，queue.peek()为null时不能直接和基本数据类型作比较，所以判断queue.peek()不为空
+            else if (s.charAt(i) == ')' && queue.peek() != null && queue.peek() == '(') {
+                queue.pop();
+            }
+            else if (s.charAt(i) == ']' && queue.peek() != null && queue.peek() == '[') {
+                queue.pop();
+            }
+            else if (s.charAt(i) == '}' && queue.peek() != null && queue.peek() == '{')  {
+                queue.pop();
+            }
+            else return false;
+        }
+        //由步骤1、2得到queue.size()不可能为0，只有当3、4执行时，左右括号按题目要求成对出现后，queue.size()才会为0
+        return queue.size() == 0;
     }
 
     public ListNode removeNthFromEnd(ListNode head, int n) {
