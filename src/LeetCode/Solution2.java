@@ -1,16 +1,107 @@
 package LeetCode;
 
 import entity.ListNode;
+
+import java.awt.List;
 import java.util.*;
 
 public class Solution2 {
     public static void main(String[] args) {
 
-        boolean listNode = new Solution2().isValid("([}}])");
+        ListNode list1 = new ListNode(2,new ListNode(5,new ListNode(8,new ListNode(76))));
+        ListNode list2 = new ListNode(1,new ListNode(4,new ListNode(9)));
+
+        ListNode listNode = new Solution2().mergeTwoLists3(list1,list2);
         System.out.println(listNode);
     }
 
+    public ListNode mergeTwoLists3(ListNode list1, ListNode list2) {
+        if (list1 == null) return list2;
+        if (list2 == null) return list1;
+        ListNode result = new ListNode();
+        ListNode temp = result;
+        while (list1 != null && list2 != null){
+            if(list1.val < list2.val){
+                temp.next = list1;
+                list1 = list1.next;
+            }
+            else {
+                temp.next = list2;
+                list2 = list2.next;
+            }
+            temp = temp.next;
+        }
+
+        return result;
+    }
+
+    public ListNode mergeTwoLists(ListNode list1, ListNode list2) {
+
+        if (list1 == null) {
+            return list2;
+        } else if (list2 == null) {
+            return list1;
+        } else if (list1.val < list2.val) {
+            list1.next = mergeTwoLists(list1.next, list2);
+            return list1;
+        } else {
+            list2.next = mergeTwoLists(list1, list2.next);
+            return list2;
+        }
+    }
+
+
+    public ListNode mergeTwoLists2(ListNode list1, ListNode list2) {
+        ArrayList<Integer> list = new ArrayList<>();
+        ListNode listNode = null;
+        while (list1 != null){
+            list.add(list1.val);
+            list1 = list1.next;
+        }
+        while (list2 != null){
+            list.add(list2.val);
+            list2 = list2.next;
+        }
+        list.sort( new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return o2-o1;
+            }
+        });
+        for (int num :
+                list) {
+            listNode = new ListNode(num,listNode);
+        }
+        return listNode;
+    }
+
     public boolean isValid(String s) {
+        int n = s.length();
+        if (n % 2 == 1) {
+            return false;
+        }
+
+        Map<Character, Character> pairs = new HashMap<Character, Character>() {{
+            put(')', '(');
+            put(']', '[');
+            put('}', '{');
+        }};
+        Deque<Character> stack = new LinkedList<Character>();
+        for (int i = 0; i < n; i++) {
+            char ch = s.charAt(i);
+            if (pairs.containsKey(ch)) {
+                if (stack.isEmpty() || stack.peek() != pairs.get(ch)) {
+                    return false;
+                }
+                stack.pop();
+            } else {
+                stack.push(ch);
+            }
+        }
+        return stack.isEmpty();
+    }
+
+    public boolean isValid2(String s) {
         //1.如果括号数为奇数，当然就无法成对闭合：不满足条件一
         if (s.length() % 2 == 1) return false;
 
